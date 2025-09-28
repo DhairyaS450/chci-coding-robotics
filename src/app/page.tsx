@@ -4,28 +4,17 @@ import ExecutiveTeam from '@/components/ExecutiveTeam'
 import AnimatedBackground from '@/components/AnimatedBackground'
 import CustomCursor from '@/components/CustomCursor'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import Image from 'next/image'
 
-export default function Home() {
-  const featuredProjects = [
-    {
-      title: "Smart Greenhouse Controller",
-      description: "Automated plant care system using sensors and Arduino",
-      tech: ["Arduino", "Python", "IoT"],
-      image: "/projects/greenhouse.jpg"
-    },
-    {
-      title: "AI Study Buddy",
-      description: "Machine learning chatbot for homework help",
-      tech: ["Python", "TensorFlow", "React"],
-      image: "/projects/ai-buddy.jpg"
-    },
-    {
-      title: "Competition Robot",
-      description: "Autonomous robot for VEX Robotics competitions",
-      tech: ["C++", "VEX", "Computer Vision"],
-      image: "/projects/robot.jpg"
-    }
-  ]
+export default async function Home() {
+  const supabase = await createClient()
+  const { data: featuredProjects } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('is_featured', true)
+    .eq('status', 'published')
+    .limit(3)
 
   return (
     <div className="min-h-screen bg-[#F7F7F7] custom-cursor">
@@ -181,7 +170,7 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {featuredProjects.map((project, index) => (
+            {featuredProjects?.map((project, index) => (
               <div 
                 key={project.title} 
                 className="group cursor-pointer animate-slide-up hover-lift"
@@ -189,11 +178,12 @@ export default function Home() {
               >
                 {/* Project Image with enhanced effects */}
                 <div className="aspect-[4/3] bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl mb-8 overflow-hidden group-hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02] relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#1F7A3A]/20 to-[#1F7A3A]/40 flex items-center justify-center group-hover:from-[#1F7A3A]/30 group-hover:to-[#1F7A3A]/50 transition-all duration-500">
-                    <span className="text-[#1F7A3A] text-6xl font-bold opacity-30 group-hover:opacity-40 transition-all duration-500 group-hover:scale-110">
-                      {project.title.charAt(0)}
-                    </span>
-                  </div>
+                  <Image
+                    src={project.media}
+                    alt={project.title}
+                    layout="fill"
+                    objectFit="cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
                 
@@ -205,7 +195,7 @@ export default function Home() {
                 </p>
                 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {project.tech.map((tech) => (
+                  {project.tech_stack.map((tech: any) => (
                     <span
                       key={tech}
                       className="px-4 py-2 bg-[#1F7A3A]/10 text-[#1F7A3A] rounded-full text-sm font-semibold hover-scale transition-transform duration-200"
@@ -217,12 +207,12 @@ export default function Home() {
                 
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500 font-medium">Featured Project</span>
-                  <div className="text-[#1F7A3A] font-bold hover:text-[#2d8a4a] transition-colors flex items-center group">
+                  <Link href={`/projects/${project.slug}`} className="text-[#1F7A3A] font-bold hover:text-[#2d8a4a] transition-colors flex items-center group">
                     View Project 
                     <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                     </svg>
-                  </div>
+                  </Link>
                 </div>
               </div>
             ))}
