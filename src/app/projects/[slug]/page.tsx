@@ -3,18 +3,12 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 
-type ProjectPageProps = {
-  params: {
-    slug: string
-  }
-}
-
-export default async function ProjectPage({ params }: ProjectPageProps) {
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const supabase = await createClient()
   const { data: project } = await supabase
     .from('projects')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', (await params).slug)
     .single()
 
   if (!project) {
