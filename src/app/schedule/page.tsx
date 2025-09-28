@@ -1,6 +1,5 @@
 'use client'
 
-import Footer from '@/components/Footer'
 import FloatingSocial from '@/components/FloatingSocial'
 import AnimatedBackground from '@/components/AnimatedBackground'
 import CustomCursor from '@/components/CustomCursor'
@@ -221,8 +220,6 @@ export default function Schedule() {
           </div>
         </div>
       </section>
-
-      <Footer />
 
       {/* Image Modal */}
       {isModalOpen && (

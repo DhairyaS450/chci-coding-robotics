@@ -1,12 +1,9 @@
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 import FloatingSocial from '@/components/FloatingSocial'
 import ExecutiveTeam from '@/components/ExecutiveTeam'
 
 export default function About() {
   return (
     <div className="min-h-screen bg-[#F7F7F7] custom-cursor">
-      <Header />
       <FloatingSocial />
       
       {/* Hero Section */}
@@ -161,8 +158,6 @@ export default function About() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }

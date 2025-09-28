@@ -1,6 +1,5 @@
 'use client'
 
-import Footer from '@/components/Footer'
 import FloatingSocial from '@/components/FloatingSocial'
 import AnimatedBackground from '@/components/AnimatedBackground'
 import CustomCursor from '@/components/CustomCursor'
@@ -335,8 +334,6 @@ export default function Opportunities() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }

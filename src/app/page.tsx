@@ -1,4 +1,3 @@
-import Footer from '@/components/Footer'
 import FloatingSocial from '@/components/FloatingSocial'
 import ExecutiveTeam from '@/components/ExecutiveTeam'
 import AnimatedBackground from '@/components/AnimatedBackground'
@@ -178,12 +177,14 @@ export default async function Home() {
               >
                 {/* Project Image with enhanced effects */}
                 <div className="aspect-[4/3] bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl mb-8 overflow-hidden group-hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02] relative">
-                  <Image
-                    src={project.media}
-                    alt={project.title}
-                    layout="fill"
-                    objectFit="cover"
-                  />
+                  {project.media && (
+                    <Image
+                      src={project.media}
+                      alt={project.title}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
                 
@@ -314,8 +315,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }

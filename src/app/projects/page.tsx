@@ -1,93 +1,47 @@
 'use client'
 
-import Footer from '@/components/Footer'
 import FloatingSocial from '@/components/FloatingSocial'
 import AnimatedBackground from '@/components/AnimatedBackground'
 import CustomCursor from '@/components/CustomCursor'
 import Link from 'next/link'
-import { useState } from 'react'
+import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { Database } from '@/lib/supabase/types'
+
+type Project = Database['public']['Tables']['projects']['Row']
 
 export default function Projects() {
-  const [selectedFilter, setSelectedFilter] = useState('all')
   const [selectedTech, setSelectedTech] = useState('all')
+  const [projects, setProjects] = useState<Project[]>([])
+  const [allTechs, setAllTechs] = useState<string[]>([])
 
-  const categories = [
-    { id: 'all', name: 'All Projects', color: 'bg-gray-100 text-gray-700' },
-    { id: 'web', name: 'Web Apps', color: 'bg-blue-100 text-blue-700' },
-    { id: 'mobile', name: 'Mobile Apps', color: 'bg-green-100 text-green-700' },
-    { id: 'robotics', name: 'Robotics', color: 'bg-red-100 text-red-700' },
-    { id: 'ai', name: 'AI/ML', color: 'bg-purple-100 text-purple-700' },
-    { id: 'iot', name: 'IoT/Hardware', color: 'bg-yellow-100 text-yellow-700' },
-  ]
-
-  const projects = [
-    {
-      id: 1,
-      title: "Smart Home Automation System",
-      description: "A comprehensive IoT solution for home automation using Arduino, sensors, and a React web interface.",
-      techStack: ["Arduino", "React", "Node.js", "Socket.io"],
-      author: "Alex Chen",
-      featured: true,
-      status: "published",
-      category: "iot"
-    },
-    {
-      id: 2,
-      title: "AI-Powered Study Assistant",
-      description: "Machine learning chatbot that helps students with homework and study planning.",
-      techStack: ["Python", "TensorFlow", "Flask", "React"],
-      author: "Sarah Kim",
-      featured: true,
-      status: "published",
-      category: "ai"
-    },
-    {
-      id: 3,
-      title: "Autonomous Competition Robot",
-      description: "VEX robot with advanced pathfinding and computer vision capabilities.",
-      techStack: ["C++", "VEX V5", "Computer Vision"],
-      author: "Emma Rodriguez",
-      featured: true,
-      status: "published",
-      category: "robotics"
-    },
-    {
-      id: 4,
-      title: "Real-time Code Collaboration Platform",
-      description: "Collaborative coding environment with live editing and video chat integration.",
-      techStack: ["TypeScript", "WebRTC", "Socket.io", "Monaco"],
-      author: "Michael Zhang",
-      featured: false,
-      status: "published",
-      category: "web"
-    },
-    {
-      id: 5,
-      title: "School Event Management App",
-      description: "Mobile app for managing CHCI events with push notifications and calendar integration.",
-      techStack: ["React Native", "Firebase", "TypeScript"],
-      author: "Jordan Lee",
-      featured: false,
-      status: "published",
-      category: "mobile"
-    },
-    {
-      id: 6,
-      title: "Data Visualization Dashboard",
-      description: "Interactive dashboard for visualizing student performance and club analytics.",
-      techStack: ["Python", "Plotly", "Dash", "Pandas"],
-      author: "David Park",
-      featured: false,
-      status: "published",
-      category: "web"
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('status', 'published')
+      
+      if (error) {
+        console.error('Error fetching projects:', error)
+      } else {
+        setProjects(data as Project[])
+        const allTechs = Array.from(new Set(data.flatMap(p => p.tech_stack)))
+        setAllTechs(allTechs)
+      }
     }
-  ]
+    fetchProjects()
+  }, [])
+
+  const mainTechs = ["React", "Next.js", "Python", "Flutter", "Firebase"]
+  const moreTechs = allTechs.filter(t => !mainTechs.includes(t))
 
   // Filter projects based on selected filters
   const filteredProjects = projects
-    .filter(project => selectedFilter === 'all' || project.category === selectedFilter)
-    .filter(project => selectedTech === 'all' || project.techStack.some(tech => tech.toLowerCase().includes(selectedTech.toLowerCase())))
-    .sort((a, b) => b.featured ? 1 : -1) // Featured projects first
+    .filter(project => selectedTech === 'all' || project.tech_stack.includes(selectedTech))
+    .sort((a, b) => (b.is_featured ? 1 : -1)) // Featured projects first
 
   return (
     <div className="min-h-screen bg-[#F7F7F7] custom-cursor">
@@ -143,29 +97,38 @@ export default function Projects() {
               All Projects ({filteredProjects.length})
             </h2>
             <p className="text-xl text-gray-600 leading-relaxed">
-              {selectedFilter !== 'all' || selectedTech !== 'all' 
+              {selectedTech !== 'all' 
                 ? 'Filtered results - click "All" to see everything' 
                 : 'Every amazing project created by our talented members'
               }
             </p>
           </div>
 
-          {/* Category Filters */}
+          {/* Technology Filters */}
           <div className="mb-8 animate-slide-up" style={{animationDelay: '0.2s'}}>
             <div className="flex flex-wrap justify-center gap-2">
-              {categories.map((category) => (
+              <button onClick={() => setSelectedTech('all')} className={`px-4 py-2 rounded-full font-medium transition-all duration-300 hover-scale ${selectedTech === 'all' ? 'bg-[#1F7A3A] text-white shadow-lg' : 'bg-gray-100 text-gray-700'}`}>All Projects</button>
+              {mainTechs.map((tech) => (
                 <button
-                  key={category.id}
-                  onClick={() => setSelectedFilter(category.id)}
+                  key={tech}
+                  onClick={() => setSelectedTech(tech)}
                   className={`px-4 py-2 rounded-full font-medium transition-all duration-300 hover-scale ${
-                    selectedFilter === category.id
+                    selectedTech === tech
                       ? 'bg-[#1F7A3A] text-white shadow-lg'
-                      : category.color
+                      : 'bg-gray-100 text-gray-700'
                   }`}
                 >
-                  {category.name}
+                  {tech}
                 </button>
               ))}
+              <div className="relative">
+                <select onChange={(e) => setSelectedTech(e.target.value)} className="px-4 py-2 rounded-full font-medium transition-all duration-300 hover-scale bg-gray-100 text-gray-700 appearance-none">
+                  <option value="all">More</option>
+                  {moreTechs.map((tech) => (
+                    <option key={tech} value={tech}>{tech}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
           
@@ -178,15 +141,24 @@ export default function Projects() {
               >
                 {/* Project Image with enhanced effects */}
                 <div className="aspect-[4/3] bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl mb-6 overflow-hidden group-hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02] relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#1F7A3A]/20 to-[#1F7A3A]/40 flex items-center justify-center group-hover:from-[#1F7A3A]/30 group-hover:to-[#1F7A3A]/50 transition-all duration-500">
-                    <span className="text-[#1F7A3A] text-6xl font-bold opacity-30 group-hover:opacity-40 transition-all duration-500 group-hover:scale-110">
-                      {project.title.charAt(0)}
-                    </span>
-                  </div>
+                  {project.media ? (
+                    <Image
+                      src={project.media}
+                      alt={project.title}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#1F7A3A]/20 to-[#1F7A3A]/40 flex items-center justify-center group-hover:from-[#1F7A3A]/30 group-hover:to-[#1F7A3A]/50 transition-all duration-500">
+                      <span className="text-[#1F7A3A] text-6xl font-bold opacity-30 group-hover:opacity-40 transition-all duration-500 group-hover:scale-110">
+                        {project.title.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
                   {/* Featured Badge */}
-                  {project.featured && (
+                  {project.is_featured && (
                     <div className="absolute top-4 right-4">
                       <span className="bg-[#D4AF37] text-[#111111] px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-glow">
                         ⭐ Featured
@@ -203,7 +175,7 @@ export default function Projects() {
                 </p>
                 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {project.techStack.slice(0, 3).map((tech) => (
+                  {project.tech_stack.slice(0, 3).map((tech) => (
                     <span
                       key={tech}
                       className="px-4 py-2 bg-[#1F7A3A]/10 text-[#1F7A3A] rounded-full text-sm font-semibold hover-scale transition-transform duration-200"
@@ -211,17 +183,16 @@ export default function Projects() {
                       {tech}
                     </span>
                   ))}
-                  {project.techStack.length > 3 && (
+                  {project.tech_stack.length > 3 && (
                     <span className="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
-                      +{project.techStack.length - 3} more
+                      +{project.tech_stack.length - 3} more
                     </span>
                   )}
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-500 font-medium">by {project.author}</span>
                   <Link
-                    href={`/projects/${project.id}`}
+                    href={`/projects/${project.slug}`}
                     className="text-[#1F7A3A] font-bold hover:text-[#2d8a4a] transition-colors flex items-center group"
                   >
                     View Project 
@@ -242,7 +213,6 @@ export default function Projects() {
               <p className="text-gray-600 mb-6">Try adjusting your filters to see more projects</p>
               <button
                 onClick={() => {
-                  setSelectedFilter('all')
                   setSelectedTech('all')
                 }}
                 className="px-6 py-3 bg-[#1F7A3A] text-white rounded-xl font-semibold hover-lift transition-all duration-300"
@@ -289,8 +259,6 @@ export default function Projects() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }

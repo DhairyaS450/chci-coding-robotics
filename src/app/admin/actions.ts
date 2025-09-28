@@ -15,6 +15,21 @@ async function checkAdmin() {
   return user
 }
 
+export async function getProjectsForReview() {
+  await checkAdmin()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .in('status', ['pending', 'published'])
+  
+  if (error) {
+    console.error('Error fetching projects:', error)
+    return []
+  }
+  return data
+}
+
 export async function approveProject(projectId: string) {
   const user = await checkAdmin()
   const supabase = await createClient()
