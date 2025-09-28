@@ -1,6 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import RoleDisplay from '@/components/RoleDisplay'
+import Header from '@/components/Header'
+import { createClient } from '@/lib/supabase/server'
+import Footer from '@/components/Footer'
+import CustomCursor from '@/components/CustomCursor'
+import AnimatedBackground from '@/components/AnimatedBackground'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -32,15 +38,25 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <CustomCursor />
+        <AnimatedBackground />
+        <Header user={user} />
         {children}
+        <Footer />
+        <RoleDisplay />
       </body>
     </html>
   )

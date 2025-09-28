@@ -1,11 +1,13 @@
 'use client'
 
+import { signInWithGoogle, signOut } from '@/app/auth/actions'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import type { User } from '@supabase/supabase-js'
 
-export default function Header() {
+export default function Header({ user }: { user: User | null }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const navigation = [
@@ -48,6 +50,25 @@ export default function Header() {
                 {item.name}
               </Link>
             ))}
+            {user ? (
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="bg-red-600 text-white px-4 py-2 rounded-md text-lg font-medium hover:bg-red-500 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </form>
+            ) : (
+              <form action={signInWithGoogle}>
+                <button
+                  type="submit"
+                  className="bg-gray-800 text-white px-4 py-2 rounded-md text-lg font-medium hover:bg-gray-700 transition-colors"
+                >
+                  Login with Google
+                </button>
+              </form>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}

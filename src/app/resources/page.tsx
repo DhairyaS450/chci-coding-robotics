@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import FloatingSocial from '@/components/FloatingSocial'
 import AnimatedBackground from '@/components/AnimatedBackground'
@@ -622,7 +621,6 @@ export default function Resources() {
   return (
     <div className="min-h-screen bg-[#F7F7F7] custom-cursor">
       <CustomCursor />
-      <Header />
       <FloatingSocial />
       
       {/* Compact Hero Section */}

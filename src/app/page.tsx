@@ -1,4 +1,3 @@
-import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import FloatingSocial from '@/components/FloatingSocial'
 import ExecutiveTeam from '@/components/ExecutiveTeam'
@@ -31,7 +30,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F7F7F7] custom-cursor">
       <CustomCursor />
-      <Header />
       <FloatingSocial />
       
       {/* Hero Section with Background Animation */}
