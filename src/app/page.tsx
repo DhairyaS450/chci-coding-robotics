@@ -60,25 +60,12 @@ export default async function Home() {
               <div className="relative">
                 {/* Photo Frame */}
                 <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/20 hover-lift">
-                  {/* Placeholder for club photo */}
-                  <div className="w-full h-full bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-6xl mb-4 opacity-50">📸</div>
-                      <p className="text-white/80 text-lg font-medium">
-                        CHCI Coding x Robotics Club
-                      </p>
-                      <p className="text-white/60 text-sm">
-                        Class of 2024-2025
-                      </p>
-                    </div>
-                  </div>
-                  {/* Replace the above div with this when you have the actual photo */}
-                  {/* <Image
-                    src="/team/club-photo-2024.jpg"
+                  <Image
+                    src="/coding_club_24_25.jpg"
                     alt="CHCI Coding x Robotics Club Team Photo"
                     fill
                     className="object-cover"
-                  /> */}
+                  />
                 </div>
                 
                 {/* Decorative Elements */}
